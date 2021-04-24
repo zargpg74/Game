@@ -1,0 +1,56 @@
+<style>canvas {display: block;margin: 10px auto 0;}</style>
+<canvas id="cv"></canvas>
+<script>
+let cv=null, ctx=null, mX=null, fr=24,bX=50,bY=50,bXs=5,bYs=6,bR=10,pX=null, pW=100,pH=10,pOf=40;
+function mouseCoords(event){
+let cOf=cv.getBoundingClientRect();
+let el=document.documentElement;
+mX=event.clientX-cOf.left-el.scrollLeft;
+pX=mX-pW/2;
+}
+function drawRect(X, Y, W, H, color){
+ctx.fillStyle=color;
+ctx.fillRect(X, Y, W, H);
+}
+function drawBall(X, Y, r, color) {
+ctx.fillStyle=color;
+ctx.beginPath();
+ctx.arc(X, Y, r, 0, 360*Math.PI/180, true);
+ctx.fill();
+ctx.closePath();
+}
+function drawAll() {
+drawRect(0, 0, cv.width, cv.height, '#000');
+drawBall(bX, bY, bR, 'firebrick');
+drawRect(pX, cv.height - pOf, pW, pH, '#fff');
+}
+function moveAll() {
+let pLe=pX;
+let pRe=pLe+pW;
+let pTe=cv.height-pOf;
+let pBe=pTe+pH;
+bX+=bXs;
+bY+=bYs;
+if (bX<0 || bX>cv.width){bXs *= -1;}
+if (bY<0 || bY>cv.height){bYs *= -1;}
+if (bX>pLe && bX<pRe && bY>pTe && bY<pBe){
+bYs *= -1;
+let pC=pLe+pW/2;
+let dist=bX-pC;
+bXs=dist*0.35;
+}
+}
+function updateAll(){setInterval(function(){
+moveAll();
+drawAll();
+}, 1000/fr);}
+window.addEventListener('DOMContentLoaded', function(){
+cv=document.querySelector('#cv');
+ctx=cv.getContext('2d');
+if (ctx){
+cv.width=800;
+cv.height=400;
+updateAll();
+cv.addEventListener('mousemove', mouseCoords, false);
+}}, false);
+</script>
